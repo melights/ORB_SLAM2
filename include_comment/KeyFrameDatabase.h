@@ -18,15 +18,16 @@
 * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FrameDrawerAR_H
-#define FrameDrawerAR_H
+#ifndef KEYFRAMEDATABASE_H
+#define KEYFRAMEDATABASE_H
 
-#include "Tracking.h"
-#include "MapPoint.h"
-#include "Map.h"
+#include <vector>
+#include <list>
+#include <set>
 
-#include<opencv2/core/core.hpp>
-#include<opencv2/features2d/features2d.hpp>
+#include "KeyFrame.h"
+#include "Frame.h"
+#include "ORBVocabulary.h"
 
 #include<mutex>
 
@@ -34,40 +35,40 @@
 namespace ORB_SLAM2
 {
 
-class Tracking;
-class Viewer;
+class KeyFrame;
+class Frame;
 
-class FrameDrawerAR
+
+class KeyFrameDatabase
 {
 public:
-    FrameDrawerAR(Map* pMap);
 
-    // Update info from the last processed frame.
-    void Update(Tracking *pTracker);
+    KeyFrameDatabase(const ORBVocabulary &voc);
 
-    // Draw last processed frame.
-    cv::Mat DrawFrame();
+   void add(KeyFrame* pKF);
+
+   void erase(KeyFrame* pKF);
+
+   void clear();
+
+   // Loop Detection
+   std::vector<KeyFrame *> DetectLoopCandidates(KeyFrame* pKF, float minScore);
+
+   // Relocalization
+   std::vector<KeyFrame*> DetectRelocalizationCandidates(Frame* F);
 
 protected:
 
-    void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);
+  // Associated vocabulary
+  const ORBVocabulary* mpVoc; ///< 预先训练好的词典
 
-    // Info of the frame to be drawn
-    cv::Mat mIm;
-    int N;
-    vector<cv::KeyPoint> mvCurrentKeys;
-    vector<bool> mvbMap, mvbVO;
-    bool mbOnlyTracking;
-    int mnTracked, mnTrackedVO;
-    vector<cv::KeyPoint> mvIniKeys;
-    vector<int> mvIniMatches;
-    int mState;
+  // Inverted file
+  std::vector<list<KeyFrame*> > mvInvertedFile; ///< 倒排索引，mvInvertedFile[i]表示包含了第i个word id的所有关键帧
 
-    Map* mpMap;
-
-    std::mutex mMutex;
+  // Mutex
+  std::mutex mMutex;
 };
 
 } //namespace ORB_SLAM
 
-#endif // FrameDrawerAR_H
+#endif

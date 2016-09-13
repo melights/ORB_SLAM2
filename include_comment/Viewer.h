@@ -22,7 +22,7 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-#include "FrameDrawerAR.h"
+#include "FrameDrawer.h"
 #include "MapDrawer.h"
 #include "Tracking.h"
 #include "System.h"
@@ -33,14 +33,14 @@ namespace ORB_SLAM2
 {
 
 class Tracking;
-class FrameDrawerAR;
+class FrameDrawer;
 class MapDrawer;
 class System;
 
 class Viewer
 {
 public:
-    Viewer(System* pSystem, FrameDrawerAR* pFrameDrawerAR, MapDrawer* pMapDrawer, Tracking *pTracking, const string &strSettingPath);
+    Viewer(System* pSystem, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Tracking *pTracking, const string &strSettingPath);
 
     // Main thread function. Draw points, keyframes, the current camera pose and the last processed
     // frame. Drawing is refreshed according to the camera fps. We use Pangolin.
@@ -61,7 +61,7 @@ private:
     bool Stop();
 
     System* mpSystem;
-    FrameDrawerAR* mpFrameDrawerAR;
+    FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
     Tracking* mpTracker;
 

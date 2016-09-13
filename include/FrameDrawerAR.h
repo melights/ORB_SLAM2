@@ -41,17 +41,17 @@ class FrameDrawerAR
 {
 public:
     FrameDrawerAR(Map* pMap);
-
+    ~FrameDrawerAR();
     // Update info from the last processed frame.
     void Update(Tracking *pTracker);
 
     // Draw last processed frame.
-    cv::Mat DrawFrame();
-
+    bool DrawFrame();
+    cv::Mat CvDrawFrame();
 protected:
-
+    void InitMat(cv::Mat& m,float* num);
     void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);
-
+    bool InitGL();
     // Info of the frame to be drawn
     cv::Mat mIm;
     int N;
@@ -64,8 +64,11 @@ protected:
     int mState;
 
     Map* mpMap;
-
+    cv::Mat mpPose;
     std::mutex mMutex;
+
+
+
 };
 
 } //namespace ORB_SLAM

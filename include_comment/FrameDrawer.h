@@ -18,8 +18,8 @@
 * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef FrameDrawerAR_H
-#define FrameDrawerAR_H
+#ifndef FRAMEDRAWER_H
+#define FRAMEDRAWER_H
 
 #include "Tracking.h"
 #include "MapPoint.h"
@@ -37,10 +37,10 @@ namespace ORB_SLAM2
 class Tracking;
 class Viewer;
 
-class FrameDrawerAR
+class FrameDrawer
 {
 public:
-    FrameDrawerAR(Map* pMap);
+    FrameDrawer(Map* pMap);
 
     // Update info from the last processed frame.
     void Update(Tracking *pTracker);
@@ -70,4 +70,4 @@ protected:
 
 } //namespace ORB_SLAM
 
-#endif // FrameDrawerAR_H
+#endif // FRAMEDRAWER_H

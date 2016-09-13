@@ -20,13 +20,14 @@
 
 #include "Viewer.h"
 #include <pangolin/pangolin.h>
+
 #include <mutex>
 
 namespace ORB_SLAM2
 {
 
-Viewer::Viewer(System* pSystem, FrameDrawerAR *pFrameDrawerAR, MapDrawer *pMapDrawer, Tracking *pTracking, const string &strSettingPath):
-    mpSystem(pSystem), mpFrameDrawerAR(pFrameDrawerAR),mpMapDrawer(pMapDrawer), mpTracker(pTracking),
+Viewer::Viewer(System* pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking, const string &strSettingPath):
+    mpSystem(pSystem), mpFrameDrawer(pFrameDrawer),mpMapDrawer(pMapDrawer), mpTracker(pTracking),
     mbFinishRequested(false), mbFinished(true), mbStopped(false), mbStopRequested(false)
 {
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
@@ -92,7 +93,6 @@ void Viewer::Run()
 
     while(1)
     {
-        pangolin::BindToContext("ORB-SLAM2: Map Viewer");
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         mpMapDrawer->GetCurrentOpenGLCameraMatrix(Twc);
@@ -133,12 +133,9 @@ void Viewer::Run()
 
         pangolin::FinishFrame();
 
-
-        mpFrameDrawerAR->DrawFrame();
-        // cv::Mat im = mpFrameDrawerAR->CvDrawFrame();
-        // if (im.cols>0)
-        //     cv::imshow("[CV]ORB-SLAM2: Current Frame",im);
-        // cv::waitKey(mT);
+        cv::Mat im = mpFrameDrawer->DrawFrame();
+        cv::imshow("ORB-SLAM2: Current Frame",im);
+        cv::waitKey(mT);
 
         if(menuReset)
         {
@@ -159,7 +156,9 @@ void Viewer::Run()
         {
             while(isStopped())
             {
-                usleep(3000);
+				//usleep(3000);
+				std::this_thread::sleep_for(std::chrono::milliseconds(3));
+
             }
         }
 

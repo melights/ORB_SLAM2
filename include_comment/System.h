@@ -27,7 +27,7 @@
 #include<opencv2/core/core.hpp>
 
 #include "Tracking.h"
-#include "FrameDrawerAR.h"
+#include "FrameDrawer.h"
 #include "MapDrawer.h"
 #include "Map.h"
 #include "LocalMapping.h"
@@ -40,7 +40,7 @@ namespace ORB_SLAM2
 {
 
 class Viewer;
-class FrameDrawerAR;
+class FrameDrawer;
 class Map;
 class Tracking;
 class LocalMapping;
@@ -115,9 +115,6 @@ private:
     // Input sensor
     eSensor mSensor;
 
-    // Enable/Disable viewer
-    bool mbUseViewer;
-    
     // ORB vocabulary used for place recognition and feature matching.
     ORBVocabulary* mpVocabulary;
 
@@ -142,7 +139,7 @@ private:
     // The viewer draws the map and the current camera pose. It uses Pangolin.
     Viewer* mpViewer;
 
-    FrameDrawerAR* mpFrameDrawerAR;
+    FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
 
     // System threads: Local Mapping, Loop Closing, Viewer.

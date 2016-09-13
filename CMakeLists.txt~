@@ -84,6 +84,7 @@ src/objloader.cpp
 src/planar.cpp
 src/texture.cpp
 src/shader.cpp
+src/disp.cpp
 )
 set( ADDITIONAL_LIBS 
      -L/usr/lib/x86_64-linux-gnu
