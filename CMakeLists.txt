@@ -49,13 +49,18 @@ include_directories(${PNG_INCLUDE_DIR})
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
 
+find_package( PCL 1.7 REQUIRED )
 
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
+${PCL_INCLUDE_DIRS}
 )
+
+add_definitions( ${PCL_DEFINITIONS} )
+link_directories( ${PCL_LIBRARY_DIRS} )
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
@@ -84,6 +89,7 @@ src/objloader.cpp
 src/planar.cpp
 src/texture.cpp
 src/shader.cpp
+src/pointcloudmapping.cc
 )
 set( ADDITIONAL_LIBS 
      -L/usr/lib/x86_64-linux-gnu
@@ -106,6 +112,7 @@ ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+${PCL_LIBRARIES}
 ${GLEW_LIBRARIES}
 ${GLFW_LIBRARIES}
 ${PNG_LIBRARY}
@@ -119,6 +126,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Live)
 add_executable(live
 Examples/Live/live.cc)
 target_link_libraries(live ${PROJECT_NAME})
+
+add_executable(video
+Examples/Live/video.cc)
+target_link_libraries(video ${PROJECT_NAME})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
 

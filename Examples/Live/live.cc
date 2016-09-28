@@ -7,7 +7,7 @@
 #include<System.h>
 using namespace cv;
 //VideoCapture cap_left("/home/long/data/scale/left.avi");
- cv::VideoCapture cap_left(0);
+ cv::VideoCapture cap_left(1);
 
 int main( void )
 {

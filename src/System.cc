@@ -93,8 +93,9 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
+    mpPointCloudMapping = make_shared<PointCloudMapping>( mpMap );
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawerAR, mpMapDrawer,
-                             mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor, mbUseViewer);
+                             mpMap, mpPointCloudMapping, mpKeyFrameDatabase, strSettingsFile, mSensor, mbUseViewer);
 
     //Initialize the Local Mapping thread and launch
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
@@ -280,7 +281,7 @@ void System::Shutdown()
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
     mpViewer->RequestFinish();
-
+    mpPointCloudMapping->shutdown();
     // Wait until all thread have effectively stopped
     while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished()  ||
           !mpViewer->isFinished()      || mpLoopCloser->isRunningGBA())

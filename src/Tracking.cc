@@ -33,6 +33,8 @@
 #include"Optimizer.h"
 #include"PnPsolver.h"
 
+#include "pointcloudmapping.h"
+
 #include<iostream>
 
 #include<mutex>
@@ -43,8 +45,9 @@ using namespace std;
 namespace ORB_SLAM2
 {
 
-Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawerAR *pFrameDrawerAR, MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, const bool bUseViewer):
+Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawerAR *pFrameDrawerAR, MapDrawer *pMapDrawer, Map *pMap, shared_ptr<PointCloudMapping> pPointCloud, KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor, const bool bUseViewer):
     mState(NO_IMAGES_YET), mSensor(sensor), mbOnlyTracking(false), mbVO(false), mpORBVocabulary(pVoc),
+    mpPointCloudMapping( pPointCloud ),
     mpKeyFrameDB(pKFDB), mpInitializer(static_cast<Initializer*>(NULL)), mpSystem(pSys),
     mpFrameDrawerAR(pFrameDrawerAR), mpMapDrawer(pMapDrawer), mpMap(pMap), mnLastRelocFrameId(0), mbUseViewer(bUseViewer)
 {
@@ -1148,6 +1151,8 @@ void Tracking::CreateNewKeyFrame()
     mpLocalMapper->InsertKeyFrame(pKF);
 
     mpLocalMapper->SetNotStop(false);
+
+    mpPointCloudMapping->insertKeyFrame( pKF);
 
     mnLastKeyFrameId = mCurrentFrame.mnId;
     mpLastKeyFrame = pKF;

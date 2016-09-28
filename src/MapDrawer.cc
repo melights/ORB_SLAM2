@@ -23,7 +23,7 @@
 #include "KeyFrame.h"
 #include <pangolin/pangolin.h>
 #include <mutex>
-
+#include <fstream>
 namespace ORB_SLAM2
 {
 
@@ -67,16 +67,17 @@ void MapDrawer::DrawMapPoints()
     glPointSize(mPointSize);
     glBegin(GL_POINTS);
     glColor3f(1.0,0.0,0.0);
-
+fstream fout;
+fout.open("/home/long/output.txt",ios::trunc|ios::out); 
     for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
     {
         if((*sit)->isBad())
             continue;
         cv::Mat pos = (*sit)->GetWorldPos();
         glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
-
+        fout << pos.at<float>(0)<< "\t" <<pos.at<float>(1)<< "\t" <<pos.at<float>(2) << "\n";
     }
-
+fout << flush; fout.close();
     glEnd();
 }
 
