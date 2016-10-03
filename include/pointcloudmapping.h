@@ -26,7 +26,7 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 #include <condition_variable>
-
+#include <pcl/visualization/pcl_visualizer.h>
 using namespace ORB_SLAM2;
 
 class PointCloudMapping
@@ -41,7 +41,7 @@ public:
     void insertKeyFrame( KeyFrame* kf);
     void shutdown();
     void viewer();
-    
+    void keyboard_callback( const pcl::visualization::KeyboardEvent& event, void* );
 protected:
     pcl::PointCloud< pcl::PointXYZ >::Ptr generatePointCloud(KeyFrame* kf);
     

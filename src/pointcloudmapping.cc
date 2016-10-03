@@ -32,6 +32,8 @@
 #include <pcl/filters/voxel_grid.h>
 #include "Converter.h"
 
+pcl::visualization::PCLVisualizer surface_viewer("Surface");
+
 PointCloudMapping::PointCloudMapping(Map* pMap):mpMap(pMap)
 {
     // voxel.setLeafSize( resolution, resolution, resolution);
@@ -73,9 +75,9 @@ pcl::PointCloud< pcl::PointXYZ >::Ptr PointCloudMapping::generatePointCloud(KeyF
 
     pcl::PointCloud< pcl::PointXYZ >::Ptr tmp( new pcl::PointCloud< pcl::PointXYZ > );
 
-    for(size_t i=0, iend=vpRefMPs.size(); i<iend;i++)
+    for(size_t i=0, iend=vpMPs.size(); i<iend;i++)
     {
-        cv::Mat pos = vpRefMPs[i]->GetWorldPos();
+        cv::Mat pos = vpMPs[i]->GetWorldPos();
         pcl::PointXYZ p;
         p.z = pos.at<float>(2);
         p.x = pos.at<float>(0);
@@ -121,15 +123,16 @@ pcl::PointCloud< pcl::PointXYZ >::Ptr PointCloudMapping::generatePointCloud(KeyF
 
 void PointCloudMapping::viewer()
 {
-    pcl::visualization::PCLVisualizer viewer("viewer");
+    
     pcl::visualization::CloudViewer cloudviewer("cloudviewer");
-            viewer.setBackgroundColor(0, 0, 0.6);  //设置窗口颜色
+    cloudviewer.registerKeyboardCallback( &PointCloudMapping::keyboard_callback, *this );
+            surface_viewer.setBackgroundColor(0, 0, 0.6);  //设置窗口颜色
 
-        //viewer->setRepresentationToSurfaceForAllActors(); //网格模型以面片形式显示  
-        viewer.setRepresentationToPointsForAllActors(); //网格模型以点形式显示  
-        //viewer->setRepresentationToWireframeForAllActors();  //网格模型以线框图模式显示
-        viewer.addCoordinateSystem(1);  //设置坐标系,参数为坐标显示尺寸
-        viewer.initCameraParameters();
+        //surface_viewer.setRepresentationToSurfaceForAllActors(); //网格模型以面片形式显示  
+        surface_viewer.setRepresentationToPointsForAllActors(); //网格模型以点形式显示  
+        //surface_viewer.setRepresentationToWireframeForAllActors();  //网格模型以线框图模式显示
+        surface_viewer.addCoordinateSystem(1);  //设置坐标系,参数为坐标显示尺寸
+        surface_viewer.initCameraParameters();
     while(1)
     {
         {
@@ -150,52 +153,49 @@ void PointCloudMapping::viewer()
 
 
 
-        //////////////////////////*MLS*//////////////////////
-pcl::PointCloud< pcl::PointXYZ >::Ptr filtered( new pcl::PointCloud< pcl::PointXYZ > );
-pcl::PointCloud< pcl::PointXYZ >::Ptr filtered1( new pcl::PointCloud< pcl::PointXYZ > );
-pcl::PointCloud< pcl::PointXYZ >::Ptr outputCloud( new pcl::PointCloud< pcl::PointXYZ > );
+//         //////////////////////////*MLS*//////////////////////
+// pcl::PointCloud< pcl::PointXYZ >::Ptr filtered( new pcl::PointCloud< pcl::PointXYZ > );
+// pcl::PointCloud< pcl::PointXYZ >::Ptr filtered1( new pcl::PointCloud< pcl::PointXYZ > );
+// pcl::PointCloud< pcl::PointXYZ >::Ptr outputCloud( new pcl::PointCloud< pcl::PointXYZ > );
 
 
-	///// Filter the small points /////////
-    // pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
-    // // build the filter
-    // outrem.setInputCloud(p);
-    // outrem.setRadiusSearch(0.03);
-    // outrem.setMinNeighborsInRadius (2);
-    // // apply filter
-    // outrem.filter (*filtered);
+// 	///// Filter the small points /////////
+//     // pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
+//     // // build the filter
+//     // outrem.setInputCloud(p);
+//     // outrem.setRadiusSearch(0.03);
+//     // outrem.setMinNeighborsInRadius (2);
+//     // // apply filter
+//     // outrem.filter (*filtered);
 
-	std::cout << p->size() << std::endl;
-	// MLS filter
-	pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointXYZ> mls;
+// 	std::cout << p->size() << std::endl;
+// 	// MLS filter
+// 	pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointXYZ> mls;
 
-	// search method
-	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
-
-
-
-	//////// VoxelGrid Filter ////////
-// 	  pcl::VoxelGrid<pcl::PointXYZ> sor;
-//   sor.setInputCloud (filtered);
-//   sor.setLeafSize (0.01f, 0.01f, 0.01f);
-//   sor.filter (*filtered1);
-// std::cout << filtered1->size() << std::endl;
+// 	// search method
+// 	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
 
 
 
-	mls.setInputCloud(p);
-	mls.setSearchMethod (tree);
-	mls.setPolynomialFit (true);
-	mls.setPolynomialOrder(4);
-	mls.setComputeNormals(false);
-	mls.setSearchRadius(0.5);
-	// mls.setUpsamplingMethod(mls.SAMPLE_LOCAL_PLANE); 
-	// mls.setUpsamplingRadius(0.05);
-	// mls.setUpsamplingStepSize(0.015);
-	mls.process(*outputCloud);
+// 	//////// VoxelGrid Filter ////////
+// // 	  pcl::VoxelGrid<pcl::PointXYZ> sor;
+// //   sor.setInputCloud (filtered);
+// //   sor.setLeafSize (0.01f, 0.01f, 0.01f);
+// //   sor.filter (*filtered1);
+// // std::cout << filtered1->size() << std::endl;
 
 
 
+// 	mls.setInputCloud(p);
+// 	mls.setSearchMethod (tree);
+// 	mls.setPolynomialFit (true);
+// 	mls.setPolynomialOrder(4);
+// 	mls.setComputeNormals(false);
+// 	mls.setSearchRadius(0.5);
+// 	// mls.setUpsamplingMethod(mls.SAMPLE_LOCAL_PLANE); 
+// 	// mls.setUpsamplingRadius(0.05);
+// 	// mls.setUpsamplingStepSize(0.015);
+// 	mls.process(*outputCloud);
 
 
 
@@ -203,40 +203,54 @@ pcl::PointCloud< pcl::PointXYZ >::Ptr outputCloud( new pcl::PointCloud< pcl::Poi
 
 
 
-        //////////////////////////*法向估计模块*//////////////////////
-        // Normal estimation（法向量估计）
-        pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;//创建法向估计对象
-        pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);//创建法向数据指针
-        //pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);//创建kdtree用于法向计算时近邻搜索
-        //tree->setInputCloud(p);//为kdtree输入点云
-        n.setInputCloud(outputCloud);//为法向估计对象输入点云
-        n.setSearchMethod(tree);//设置法向估计时采用的搜索方式为kdtree
-        n.setKSearch(20);//设置法向估计时,k近邻搜索的点数
-        n.compute(*normals);  //进行法向估计
+
+
+
+//         //////////////////////////*法向估计模块*//////////////////////
+//         // Normal estimation（法向量估计）
+//         pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;//创建法向估计对象
+//         pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);//创建法向数据指针
+//         //pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);//创建kdtree用于法向计算时近邻搜索
+//         //tree->setInputCloud(p);//为kdtree输入点云
+//         n.setInputCloud(outputCloud);//为法向估计对象输入点云
+//         n.setSearchMethod(tree);//设置法向估计时采用的搜索方式为kdtree
+//         n.setKSearch(20);//设置法向估计时,k近邻搜索的点数
+//         n.compute(*normals);  //进行法向估计
     
-        std::cerr << "法线计算   完成" << std::endl;
+//         std::cerr << "法线计算   完成" << std::endl;
 
-        /*点云数据与法向数据拼接*/
-        // 创建同时包含点和法向的数据结构的指针
-        pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointNormal>);
-        //将已获得的点数据和法向数据拼接
-        pcl::concatenateFields(*p, *normals, *cloud_with_normals);
+//         /*点云数据与法向数据拼接*/
+//         // 创建同时包含点和法向的数据结构的指针
+//         pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointNormal>);
+//         //将已获得的点数据和法向数据拼接
+//         pcl::concatenateFields(*p, *normals, *cloud_with_normals);
 
-        //////////////////////////*泊松重建模块*//////////////////////
-             pcl::Poisson<pcl::PointNormal> poisson;
-        // poisson.setDepth(9);
-        //输入poisson重建点云数据
-        poisson.setInputCloud(cloud_with_normals);
-        //创建网格对象指针，用于存储重建结果
-        pcl::PolygonMesh triangles;
-        //poisson重建开始
-        poisson.reconstruct(triangles);
-        viewer.removePolygonMesh("my");
-        viewer.addPolygonMesh(triangles, "my");  //设置所要显示的网格对象
+//         //////////////////////////*泊松重建模块*//////////////////////
+//              pcl::Poisson<pcl::PointNormal> poisson;
+//         // poisson.setDepth(9);
+//         //输入poisson重建点云数据
+//         poisson.setInputCloud(cloud_with_normals);
+//         //创建网格对象指针，用于存储重建结果
+//         pcl::PolygonMesh triangles;
+//         //poisson重建开始
+//         poisson.reconstruct(triangles);
+//         surface_viewer.removePolygonMesh("my");
+//         surface_viewer.addPolygonMesh(triangles, "my");  //设置所要显示的网格对象
 
-        viewer.spinOnce(100);
-        //cout<<"show global map, size="<<globalMap->points.size()<<endl;
-        //lastKeyframeSize = N;
+//         surface_viewer.spinOnce(100);
+//         //cout<<"show global map, size="<<globalMap->points.size()<<endl;
+//         //lastKeyframeSize = N;
     }
+
 }
+    void PointCloudMapping::keyboard_callback( const pcl::visualization::KeyboardEvent& event, void* )
+    {
+
+			if( event.getKeyCode() && event.keyDown() ){
+				if(event.isShiftPressed())
+                    std::cout<<"space"<<std::endl;
+			}
+
+    }
+
 
