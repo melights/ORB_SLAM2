@@ -166,7 +166,7 @@ bool FrameDrawerAR::DrawFrame()
         }
     }
 
-
+        GLFWwindow * current=glfwGetCurrentContext();
         glfwMakeContextCurrent(ARwindow);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -311,7 +311,7 @@ if (glfwGetKey(ARwindow, GLFW_KEY_SPACE ) == GLFW_PRESS)
         glDrawArrays(GL_TRIANGLES, 0, vertices.size() );
 
 
-
+        glfwPollEvents();
         /*width = 640*16/9-1;
         height = 480*16/9-1;
         cv::Mat pixels( height, width, CV_8UC3 );
@@ -329,8 +329,8 @@ if (glfwGetKey(ARwindow, GLFW_KEY_SPACE ) == GLFW_PRESS)
         // Swap buffers
         glfwSwapBuffers(ARwindow);
 
-        glfwPollEvents();
 
+        glfwMakeContextCurrent(current);
 
 
 return 1;
