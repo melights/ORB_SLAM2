@@ -6,7 +6,7 @@
 #include <opencv2/opencv.hpp>
 #include<System.h>
 using namespace cv;
-VideoCapture cap("/home/long/data/scale/left.avi");
+VideoCapture cap("/home/long/data/digest.avi");
 //cv::VideoCapture cap(0);
 bool playback =true;
 int main( void )
@@ -17,7 +17,7 @@ Mat frame_left;
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM("../../Vocabulary/ORBvoc.bin", "./video.yaml", ORB_SLAM2::System::MONOCULAR);
+    ORB_SLAM2::System SLAM("../../Vocabulary/ORBvoc.bin", "./image.yaml", ORB_SLAM2::System::MONOCULAR);
 
 double frame_rate = cap.get(CV_CAP_PROP_FPS);
   double frame_msec = 1000 / frame_rate;

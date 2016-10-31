@@ -9,7 +9,7 @@ MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3 -march=native")
-set(CMAKE_MODULE_PATH /home/long/ORB_SLAM/cmake_modules)
+set(CMAKE_MODULE_PATH /home/long/ORB_Surface/cmake_modules)
 # Check C++11 or C++0x support
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -125,9 +125,13 @@ ${ADDITIONAL_LIBS}
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Live)
 
-add_executable(live
-Examples/Live/live.cc)
-target_link_libraries(live ${PROJECT_NAME})
+add_executable(images
+Examples/Live/images.cc)
+target_link_libraries(images ${PROJECT_NAME})
+
+#add_executable(live
+#Examples/Live/live.cc)
+#target_link_libraries(live ${PROJECT_NAME})
 
 add_executable(video
 Examples/Live/video.cc)

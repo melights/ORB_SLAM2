@@ -68,7 +68,7 @@ void MapDrawer::DrawMapPoints()
     glBegin(GL_POINTS);
     glColor3f(1.0,0.0,0.0);
 fstream fout;
-fout.open("/home/long/output.txt",ios::trunc|ios::out); 
+fout.open("/home/long/output_size.txt",ios::trunc|ios::out); 
     for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
     {
         if((*sit)->isBad())

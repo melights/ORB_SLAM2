@@ -41,7 +41,7 @@ PointCloudMapping::PointCloudMapping(Map* pMap):mpMap(pMap)
     // voxel.setLeafSize( resolution, resolution, resolution);
     //globalMap = boost::make_shared< PointCloud >( );
     
-    viewerThread = make_shared<thread>( bind(&PointCloudMapping::viewer, this ) );
+    //viewerThread = make_shared<thread>( bind(&PointCloudMapping::viewer, this ) );
 }
 
 void PointCloudMapping::shutdown()
@@ -69,6 +69,7 @@ void PointCloudMapping::insertKeyFrame(KeyFrame* kf)
 
 pcl::PointCloud< pcl::PointXYZ >::Ptr PointCloudMapping::generatePointCloud(KeyFrame* kf)
 {
+    /*
     const vector<MapPoint*> &vpMPs = mpMap->GetAllMapPoints();
     const vector<MapPoint*> &vpRefMPs = mpMap->GetReferenceMapPoints();
 
@@ -110,7 +111,9 @@ pcl::PointCloud< pcl::PointXYZ >::Ptr PointCloudMapping::generatePointCloud(KeyF
 
     cout<<"generate point cloud for kf "<<kf->mnId<<", size="<<tmp->points.size()<<endl;
     // return cloud;
+    
     return tmp;
+    */
 }
 
 
