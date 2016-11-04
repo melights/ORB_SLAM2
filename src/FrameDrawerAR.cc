@@ -67,8 +67,11 @@ FrameDrawerAR::FrameDrawerAR(Map* pMap):mpMap(pMap)
 {
     mState=Tracking::SYSTEM_NOT_READY;
     mIm = cv::Mat(480,640,CV_8UC3, cv::Scalar(0,0,0));
+            GLFWwindow * current=glfwGetCurrentContext();
+        glfwMakeContextCurrent(ARwindow);
     if(!InitGL())
         std::cout<<"Fail to init GL"<<std::endl;
+        glfwMakeContextCurrent(current);
     mpPose=cv::Mat::eye(4, 4, CV_32F);
 }
 
@@ -226,7 +229,7 @@ bool FrameDrawerAR::DrawFrame()
 
         glfwPollEvents();
 
-
+/*
     /////////////////Compute Pose
         glm::mat4 viewMatrix;
             cv::Mat R, tvec;
@@ -312,7 +315,7 @@ if (glfwGetKey(ARwindow, GLFW_KEY_SPACE ) == GLFW_PRESS)
 
 
         glfwPollEvents();
-        /*width = 640*16/9-1;
+        /*width = 640*16/9-1;cd 
         height = 480*16/9-1;
         cv::Mat pixels( height, width, CV_8UC3 );
         glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data );
@@ -522,7 +525,7 @@ bool FrameDrawerAR::InitGL(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Open a window and create its OpenGL context
-    ARwindow = glfwCreateWindow( 640, 480, "FFFFFFFFFFFFFFFFFF", NULL, NULL);
+    ARwindow = glfwCreateWindow( 640, 480, "ORBSLAM", NULL, NULL);
     if( ARwindow == NULL ){
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
         getchar();
