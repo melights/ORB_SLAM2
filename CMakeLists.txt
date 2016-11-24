@@ -28,7 +28,7 @@ endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-set(OpenCV_DIR /home/long/depend/opencv-3.1.0/build)
+set(OpenCV_DIR /home/long/depend/opencv/build)
 
 find_package(OpenCV 3.1 REQUIRED)
 find_package(Eigen3 3.1.0 REQUIRED)
@@ -125,17 +125,21 @@ ${ADDITIONAL_LIBS}
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Live)
 
-add_executable(images
-Examples/Live/images.cc)
-target_link_libraries(images ${PROJECT_NAME})
+add_executable(stereo
+Examples/Live/stereo.cc)
+target_link_libraries(stereo ${PROJECT_NAME})
+
+#add_executable(images
+#Examples/Live/images.cc)
+#target_link_libraries(images ${PROJECT_NAME})
 
 #add_executable(live
 #Examples/Live/live.cc)
 #target_link_libraries(live ${PROJECT_NAME})
 
-add_executable(video
-Examples/Live/video.cc)
-target_link_libraries(video ${PROJECT_NAME})
+#add_executable(video
+#Examples/Live/video.cc)
+#target_link_libraries(video ${PROJECT_NAME})
 
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
 #

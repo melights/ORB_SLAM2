@@ -170,6 +170,8 @@ void Tracking::SetViewer(Viewer *pViewer)
 cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRectRight, const double &timestamp)
 {
     mImGray = imRectLeft;
+    mImRGB  = imRectLeft;
+    mImRGB_R = imRectRight;
     cv::Mat imGrayRight = imRectRight;
 
     if(mImGray.channels()==3)
@@ -1152,7 +1154,7 @@ void Tracking::CreateNewKeyFrame()
 
     mpLocalMapper->SetNotStop(false);
 
-    mpPointCloudMapping->insertKeyFrame( pKF);
+    mpPointCloudMapping->insertKeyFrame( pKF, this->mImRGB, this->mImRGB_R );
 
     mnLastKeyFrameId = mCurrentFrame.mnId;
     mpLastKeyFrame = pKF;

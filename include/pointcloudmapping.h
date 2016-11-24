@@ -35,15 +35,15 @@ public:
     typedef pcl::PointXYZRGBA PointT;
     typedef pcl::PointCloud<PointT> PointCloud;
     
-    PointCloudMapping(Map* pMap);
+    PointCloudMapping( double resolution_ );
     
     // 插入一个keyframe，会更新一次地图
-    void insertKeyFrame( KeyFrame* kf);
+    void insertKeyFrame(KeyFrame* kf, cv::Mat& left_img, cv::Mat& right_img);
     void shutdown();
     void viewer();
-    void keyboard_callback( const pcl::visualization::KeyboardEvent& event, void* );
+
 protected:
-    pcl::PointCloud< pcl::PointXYZ >::Ptr generatePointCloud(KeyFrame* kf);
+    pcl::PointCloud< PointCloudMapping::PointT >::Ptr generatePointCloud();
     
     PointCloud::Ptr globalMap;
     shared_ptr<thread>  viewerThread;   
@@ -57,12 +57,14 @@ protected:
     // data to generate point clouds
     vector<KeyFrame*>       keyframes;
     KeyFrame*       keyframe;
-    // vector<cv::Mat>         colorImgs;
-    // vector<cv::Mat>         depthImgs;
+    cv::Mat         left;
+    cv::Mat         right;
+    
+    cv::Mat         depthImgs;
     mutex                   keyframeMutex;
     uint16_t                lastKeyframeSize =0;
     
-    // double resolution = 0.04;
+     double resolution = 0.04;
     pcl::VoxelGrid<PointT>  voxel;
 };
 
