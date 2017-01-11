@@ -37,9 +37,9 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
 #include "Converter.h"
-
+#include "StereoEfficientLargeScale.h"
 using namespace cv;
-pcl::visualization::PCLVisualizer surface_viewer("Surface");
+//pcl::visualization::PCLVisualizer surface_viewer("Surface");
 bool init=false;
 Eigen::Matrix3f intrinsics;
 PointCloudMapping::PointCloudMapping(double resolution_)
@@ -47,7 +47,7 @@ PointCloudMapping::PointCloudMapping(double resolution_)
     this->resolution = resolution_;
     voxel.setLeafSize( resolution, resolution, resolution);
     globalMap = boost::make_shared< PointCloud >( );
-    
+    namedWindow( "Disparity", WINDOW_NORMAL );
     viewerThread = make_shared<thread>( bind(&PointCloudMapping::viewer, this ) );
 }
 
@@ -83,21 +83,50 @@ pcl::PointCloud< PointCloudMapping::PointT >::Ptr PointCloudMapping::generatePoi
     cvtColor(right, right_gery, cv::COLOR_RGB2GRAY);
 
 
-    Ptr<StereoBM> bm = StereoBM::create(16,9);
+    // Ptr<StereoBM> bm = StereoBM::create(16,9);
+    // Rect roi1, roi2;
+    // Mat disp,disp8U;
+    //     bm->setROI1(roi1);
+    // bm->setROI2(roi2);
+    // bm->setPreFilterCap(1);
+    // bm->setBlockSize(23);
+    // bm->setMinDisparity(0);
+    // bm->setNumDisparities(48);
+    // bm->setTextureThreshold(0);
+    // bm->setUniquenessRatio(0);
+    // bm->setSpeckleWindowSize(0);
+    // bm->setSpeckleRange(0);
+    // bm->setDisp12MaxDiff(1);
+    // bm->compute(left_grey, right_gery, disp);
+
+
+    Ptr<StereoBM> bm = StereoBM::create(96,55);
     Rect roi1, roi2;
-    Mat disp;
-        bm->setROI1(roi1);
-    bm->setROI2(roi2);
-    bm->setPreFilterCap(1);
-    bm->setBlockSize(23);
-    bm->setMinDisparity(0);
-    bm->setNumDisparities(48);
-    bm->setTextureThreshold(0);
-    bm->setUniquenessRatio(0);
-    bm->setSpeckleWindowSize(0);
-    bm->setSpeckleRange(0);
-    bm->setDisp12MaxDiff(1);
+    Mat disp,disp8U;
+    //     bm->setROI1(roi1);
+    // bm->setROI2(roi2);
+    // bm->setPreFilterCap(1);
+    // bm->setBlockSize(55);
+    // bm->setMinDisparity(0);
+    // bm->setNumDisparities(96);
+    // bm->setTextureThreshold(0);
+    // bm->setUniquenessRatio(0);
+    // bm->setSpeckleWindowSize(0);
+    // bm->setSpeckleRange(0);
+    // bm->setDisp12MaxDiff(1);
     bm->compute(left_grey, right_gery, disp);
+
+// Mat disp,disp8U;
+// StereoEfficientLargeScale elas(0,128);
+// elas(left_grey,right_gery,disp,100);
+
+
+  double minVal; double maxVal;
+  minMaxLoc( disp, &minVal, &maxVal );
+  disp.convertTo( disp8U, CV_8UC1, 255/(maxVal - minVal));
+  imshow( "Disparity", disp8U );
+
+
 
         double px, py, pz;
   uchar pr, pg, pb;
@@ -110,14 +139,14 @@ pcl::PointCloud< PointCloudMapping::PointT >::Ptr PointCloudMapping::generatePoi
           double d = static_cast<double>(disp_ptr[j])/16;
           //double d = (double)disp.at<Vec3b>(i, j)[0];
           //std::cout<<d<<" ";
-          if (d == -1||d == 0||d>100)
+          if (d == -1||d == 0||d>100||d<0)
               continue; //Discard bad pixels
 
           pz = keyframe->mbf / d;
           px = (static_cast<double>(j) - keyframe->cx) * pz / keyframe->fx;
           py = (static_cast<double>(i) - keyframe->cy) * pz / keyframe->fy;
-          if((i-240)*(i-240)+(j-320)*(j-320)>67600)
-            continue;
+        //   if((i-240)*(i-240)+(j-320)*(j-320)>67600) //circle mask for simulation data
+        //     continue;
           PointT point;
           point.x = px;
           point.y = py;
@@ -125,8 +154,8 @@ pcl::PointCloud< PointCloudMapping::PointT >::Ptr PointCloudMapping::generatePoi
           point.b = left.at<Vec3b>(i, j)[0];
           point.g = left.at<Vec3b>(i, j)[1];
           point.r = left.at<Vec3b>(i, j)[2];
-          if (point.b==64 && point.g==64 && point.r==64)
-            continue;
+        //   if (point.b==64 && point.g==64 && point.r==64) //remove grey background for simulation data
+        //     continue;
           tmp->points.push_back(point);
       }
   }
@@ -138,7 +167,7 @@ pcl::PointCloud< PointCloudMapping::PointT >::Ptr PointCloudMapping::generatePoi
       //cloud->height = 1;
       //pcl::io::savePCDFile( "/home/long/surface_reconstruction/PCL/data/testfilter.pcd", *cloud );
 
-      // cout<<"generate point cloud for kf "<<keyframe->mnId<<", size="<<cloud->points.size()<<endl;
+       cout<<"generate point cloud for kf "<<keyframe->mnId<<", size="<<cloud->points.size()<<endl;
       PointCloud::Ptr filter1(new PointCloud());
       PointCloud::Ptr filter2(new PointCloud());
       
@@ -161,8 +190,8 @@ pcl::PointCloud< PointCloudMapping::PointT >::Ptr PointCloudMapping::generatePoi
 void PointCloudMapping::viewer()
 {
     
-    pcl::visualization::CloudViewer cloudviewer("cloudviewer");
-            surface_viewer.setBackgroundColor(0, 0, 0);  //设置窗口颜色
+    pcl::visualization::CloudViewer cloudviewer("3D Reconstruction");
+            //surface_viewer.setBackgroundColor(0, 0, 0);  //设置窗口颜色
 
         //surface_viewer.setRepresentationToSurfaceForAllActors(); //网格模型以面片形式显示  
         // surface_viewer.setRepresentationToPointsForAllActors(); //网格模型以点形式显示  
@@ -195,12 +224,30 @@ void PointCloudMapping::viewer()
         PointCloud::Ptr tmp(new PointCloud());
         voxel.setInputCloud( globalMap );
         voxel.filter( *tmp );
-        globalMap->swap( *tmp );
-        cloudviewer.showCloud( globalMap );
+        //globalMap->swap( *tmp );
+//cloudviewer.removeAllShapes();
+// cloudviewer.removeAllPointClouds();
+//         pcl::ModelCoefficients cylinder_coeff;
+// cylinder_coeff.values.resize (7);    // We need 7 values
+// cylinder_coeff.values[0] = keyframe->GetCameraCenter().at<float>(0);
+// cylinder_coeff.values[1] = keyframe->GetCameraCenter().at<float>(1);
+// cylinder_coeff.values[2] = keyframe->GetCameraCenter().at<float>(2);
+// Mat R,Rvec;
+// R=keyframe->GetRotation();
+// cv::Rodrigues(R, Rvec);
+// cylinder_coeff.values[3] = Rvec.at<float>(0)*10;
+// cylinder_coeff.values[4] = Rvec.at<float>(1)*10;
+// cylinder_coeff.values[5] = Rvec.at<float>(2)*10;
+// cylinder_coeff.values[6] = 2;
 
+//         cloudviewer.addCylinder(cylinder_coeff);
+//         cloudviewer.addPointCloud( globalMap );
+       cout<<"globalMap size="<<globalMap->points.size()<<endl;
+
+cloudviewer.showCloud( globalMap );
     t = getTickCount() - t;
     printf("Time elapsed: %fms\n", t*1000/getTickFrequency());
-
+//cloudviewer.spinOnce(100);
 
     }
 

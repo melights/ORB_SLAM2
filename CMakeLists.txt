@@ -119,6 +119,7 @@ ${GLEW_LIBRARIES}
 ${GLFW_LIBRARIES}
 ${PNG_LIBRARY}
 ${ADDITIONAL_LIBS}
+${PROJECT_SOURCE_DIR}/Thirdparty/libelas.so
 )
 
 # Build examples
